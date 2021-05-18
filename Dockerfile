@@ -8,6 +8,9 @@ ENV NODE_VERSION 12.22.1
 ENV YARN_VERSION 1.22.5
 ENV PHALCON_VERSION 4.1.x
 
+# For installation of PHP extensions
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
     && apk add --no-cache \
@@ -76,9 +79,9 @@ RUN addgroup -g 1000 node \
   && apk del .build-deps \
   # smoke tests
   && node --version \
-  && npm --version
-
-RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
+  && npm --version \
+  ##### YARN #####
+  && apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
   && for key in \
     6A010C5166006599AA17F08146C2130DFD2497F5 \
   ; do \
@@ -96,12 +99,9 @@ RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
   && apk del .build-deps-yarn \
   # smoke test
-  && yarn --version
-
-# Install PHP extensions
-ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-
-RUN chmod +x /usr/local/bin/install-php-extensions \
+  && yarn --version \
+  ##### Install PHP extensions #####
+  && chmod +x /usr/local/bin/install-php-extensions \
   && sync \
   && install-php-extensions \
     gd \
@@ -127,9 +127,8 @@ RUN chmod +x /usr/local/bin/install-php-extensions \
     xmlreader \
     xsl \
     yaml \
-    zip
-
-RUN apk add --update \
+    zip \
+  && apk add --no-cache --update \
     tzdata \
     ca-certificates \
     git \
@@ -149,10 +148,9 @@ RUN apk add --update \
     libssh2-dev \
     imagemagick-dev \
     yaml-dev \
-    curl
-
-# Install Phalcon
-RUN cd ~ && git clone --depth=1 -b ${PHALCON_VERSION} git://github.com/phalcon/cphalcon.git \
+    curl \
+  ##### Install Phalcon #####
+  && cd ~ && git clone --depth=1 -b ${PHALCON_VERSION} git://github.com/phalcon/cphalcon.git \
   && cd ~/cphalcon/build \
   && ./install \
   && echo "extension=phalcon.so" > /usr/local/etc/php/conf.d/50-phalcon.ini \
@@ -175,7 +173,13 @@ RUN cd ~ && git clone --depth=1 -b ${PHALCON_VERSION} git://github.com/phalcon/c
     imagemagick-dev \
     zlib-dev \
     tzdata \
-    php7-dev \
-  && rm -rf /var/cache/apk/*
+    # php7-dev \
+  && rm -rf /var/cache/apk/* \
+  ##### Clear cache #####
+  && (pecl clear-cache || true) \
+  && (rm -rf /tmp/pear || true) \
+  && (docker-php-source delete || true) \
+  && (apk del .build-deps || true) \
+  && (rm -rf /var/cache/apk/* || true)
 
 WORKDIR /var/www/html
