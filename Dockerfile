@@ -11,7 +11,8 @@ ENV PHALCON_VERSION 4.1.x
 # For installation of PHP extensions
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
-RUN addgroup -g 1000 node \
+RUN chmod 777 /var/www/html \
+    && addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
     && apk add --no-cache \
         libstdc++ \
