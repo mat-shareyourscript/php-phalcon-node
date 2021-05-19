@@ -7,6 +7,7 @@ LABEL org.label-schema.name="php-phalcon-node" \
 ENV NODE_VERSION 12.22.1
 ENV YARN_VERSION 1.22.5
 ENV PHALCON_VERSION 4.1.x
+ENV NPM_VERSION 7.12.1
 
 # For installation of PHP extensions
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
@@ -81,6 +82,8 @@ RUN chmod 777 /var/www/html \
   # smoke tests
   && node --version \
   && npm --version \
+  # Upgrade NPM
+  && npm install --global npm@${NPM_VERSION} \
   ##### YARN #####
   && apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
   && for key in \

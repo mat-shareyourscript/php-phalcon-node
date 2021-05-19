@@ -9,4 +9,4 @@
 
 ## Tags
 
-* [1.0.0](http://github.com/mat-shareyourscript/php-phalcon-node/releases/tag/1.0.0) - php-fpm 7.4.19, Phalcon 4.1.x, NodeJS 12.22.1, alpine 3.13
+* [1.0.0](http://github.com/mat-shareyourscript/php-phalcon-node/releases/tag/1.0.0) - php-fpm 7.4.19, Phalcon 4.1.x, NodeJS 12.22.1, NPM 7.12.1, alpine 3.13
