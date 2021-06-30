@@ -19,6 +19,7 @@ RUN chmod 777 /var/www/html \
         libstdc++ \
     && apk add --no-cache --virtual .build-deps \
         curl \
+        python \
     && ARCH= && alpineArch="$(apk --print-arch)" \
       && case "${alpineArch##*-}" in \
         x86_64) \
